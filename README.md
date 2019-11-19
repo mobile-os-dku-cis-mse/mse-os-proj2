@@ -186,7 +186,7 @@ When a child updates page table, the update is only for the child.
 (consider the case of page fault from empty mapping)
 
 ### 8. Output:
-#### A. Leave logs for 10,000 ticks
+#### A. Leave logs for 1,000 ticks
 At each time tick, access VA, PA, page fault event, page table changes, and read/
 write value can be logged.
 #### B. You can modify the examplary execution.
