@@ -1,7 +1,7 @@
 # 2019_os_proj2
 Proj2: Virtual Memory (paging)
 
-**due by November 30th (The last min. of Nov.)**
+**due by December 4th (for 2 weeks)**
 # Operating systems Project #2: Multi-process execution with Virtual Memory (paging)
 
 ## Introduction
@@ -201,4 +201,4 @@ You can give reasonable assumptions that can best present your unique features.
 
 Happy hacking!
 
-due by November 30th (The last min. of Nov.)
+due by December 4th
