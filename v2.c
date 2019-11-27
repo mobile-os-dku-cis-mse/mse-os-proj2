@@ -44,13 +44,15 @@ struct PageTable pt[MAX_PROC];
 //msg
 int msgq;
 int ret;
-int key = 0x12543;
+int key = 0x19273;
 struct MemAccessRequest{
 	pid_t pid;
 	int acc_rq[10];
 	int new_exec;
 };
 struct MemAccessRequest msg;
+
+
 
 
 int main(int argc, char *arg[]){
@@ -75,10 +77,10 @@ int main(int argc, char *arg[]){
 
 	struct itimerval new_itimer, old_itimer;
 	memset(&new_itimer, 0, sizeof(new_itimer));
-	new_itimer.it_interval.tv_sec = 0;
-	new_itimer.it_interval.tv_usec = 100000;
-	new_itimer.it_value.tv_sec = 0;
-	new_itimer.it_value.tv_usec = 100000;
+	new_itimer.it_interval.tv_sec = 1;
+	new_itimer.it_interval.tv_usec = 0;
+	new_itimer.it_value.tv_sec = 1;
+	new_itimer.it_value.tv_usec = 0;
 	setitimer(ITIMER_REAL, &new_itimer, &old_itimer);
 
 
@@ -238,6 +240,7 @@ void MMU(){
 		printf("recived VA[%d]:0x%08x\n",i,msg.acc_rq[i]);
 	}
 */
+	
 
 	//va --> pa addr trans
 	for(int i=0; i<10; i++){
@@ -256,7 +259,7 @@ void MMU(){
 				if(FreeFrame[frameN/4] == 1){
 					//already mapped frame
 					//printf("already mapped frame!\n");
-					srand(time(NULL));
+					srand(frameN);
 					frameN = rand()%0x100000;
 					continue;
 				}
