@@ -27,15 +27,15 @@ struct PCB{
 	int remain_tq;
 };
 
-int PM[PFN/4] = {0,};	//physical memory
-int FreeFrame[PFN/4]={0,};	//free page frame list
+//int PM[PFN/4] = {0,};	//physical memory
+int FreeFrame[PFN]={0,};	//free page frame list
 struct PageTableEntry{
 	int pfn;
 	int valid;	//0:invlid 1:valid
 };
 struct PageTable{
 	pid_t pid;
-	struct PageTableEntry pte[PFN/4];
+	struct PageTableEntry pte[PFN];
 	struct PCB pcb;
 };
 struct PageTable pt[MAX_PROC];
@@ -77,10 +77,10 @@ int main(int argc, char *arg[]){
 
 	struct itimerval new_itimer, old_itimer;
 	memset(&new_itimer, 0, sizeof(new_itimer));
-	new_itimer.it_interval.tv_sec = 1;
-	new_itimer.it_interval.tv_usec = 0;
-	new_itimer.it_value.tv_sec = 1;
-	new_itimer.it_value.tv_usec = 0;
+	new_itimer.it_interval.tv_sec = 0;
+	new_itimer.it_interval.tv_usec = 100000;
+	new_itimer.it_value.tv_sec = 0;
+	new_itimer.it_value.tv_usec = 100000;
 	setitimer(ITIMER_REAL, &new_itimer, &old_itimer);
 
 
@@ -191,10 +191,10 @@ void CPU(){
 	memset(&msg, 0, sizeof(msg));
 
 	msg.pid = getpid();
-	srand(time(NULL));
+	srand(tick + exec*9);
 	msg.acc_rq[0]=rand()%0xffffffff;
 	for(int i=0;i<9;i++){
-		srand(msg.acc_rq[i]);
+		srand(msg.acc_rq[i]+i*7+exec*6);
 		msg.acc_rq[i+1] = rand()%0xffffffff;
 	}
 	if(end_exec == 1){
@@ -248,31 +248,31 @@ void MMU(){
 		offset = msg.acc_rq[i]&0xfff;
 
 		//page table check
-		if(pt[curr].pte[pageN/4].valid == 0){
+		if(pt[curr].pte[pageN].valid == 0){
 			//invalid
 			//page fault!
 
 			//random mapping
-			srand(time(NULL));
+			srand(tick + pageN * 9 + i);
 			frameN = rand()%0x100000;
 			while(1){
-				if(FreeFrame[frameN/4] == 1){
+				if(FreeFrame[frameN] == 1){
 					//already mapped frame
 					//printf("already mapped frame!\n");
-					srand(frameN);
+					srand(frameN*7 + i*3);
 					frameN = rand()%0x100000;
 					continue;
 				}
 				else{
-					FreeFrame[frameN/4] = 1;
+					FreeFrame[frameN] = 1;
 					break;
 				}
 			}
 
-			printf("request[%d] page fault! free frame:%d\n",i,frameN);
+			//printf("request[%d] page fault! free frame:%d\n",i,frameN);
 
-			pt[curr].pte[pageN/4].pfn = frameN;
-			pt[curr].pte[pageN/4].valid = 1;
+			pt[curr].pte[pageN].pfn = frameN;
+			pt[curr].pte[pageN].valid = 1;
 
 			//write
 		}
@@ -280,7 +280,7 @@ void MMU(){
 			//valid
 
 			//calculate PA
-			frameN = pt[curr].pte[pageN/4].pfn;
+			frameN = pt[curr].pte[pageN].pfn;
 			pa = (frameN<<12)+offset;
 			printf("request[%d] access! frameN:%d\n",i,frameN);
 
