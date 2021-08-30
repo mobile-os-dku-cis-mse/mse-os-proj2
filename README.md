@@ -1,4 +1,4 @@
-# 2019_os_proj2
+# os_proj2
 Proj2: Virtual Memory (paging)
 
 **due by December 4th (for 2 weeks)**
